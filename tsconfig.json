@@ -1,0 +1,19 @@
+{
+  "extends": "@tsconfig/node16/tsconfig.json",
+  "compilerOptions": {
+    "module": "node16",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "target": "es2022",
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "moduleResolution": "node",
+    "declaration": true,
+    "sourceMap": false,
+    "outDir": "dist",
+    "baseUrl": ".",
+    "paths": {
+      "*": ["node_modules/*"]
+    }
+  }
+}
