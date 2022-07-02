@@ -1,22 +1,4 @@
-import fetcher, { NotionQueryType } from './api/fetcher';
-import { getTomorrowDateYYYYMMDD } from './utils/dateFormat';
-
-//　明日の日付に登録されたデータのみを取得するクエリ
-const tomorrowTaskQuery = {
-  filter: {
-    property: 'Deadline',
-    date: {
-      equals: getTomorrowDateYYYYMMDD(),
-    },
-  },
-};
-
-const tomorrowTaskAction = {
-  name: 'todayTaskAction',
-  type: 'select',
-  message: '========== 明日のタスク一覧 ==========',
-  choices: '',
-};
+import { getTomorrowTaskFetcher } from './api/getTask';
 
 // 明日のタスクのみを、選択肢として表示する形に整形し、コマンドの選択肢にセットする
 const setTomorrowTask = (results: any) => {
@@ -28,24 +10,22 @@ const setTomorrowTask = (results: any) => {
       .join('');
   });
 
-  // 選択肢にタスクをセットする
-  tomorrowTaskAction.choices = result;
-};
-
-// 明日の日付と一致するタスクをAPIより取得する
-const getTomorrowTaskFetcher = async (data: any) => {
-  await fetcher
-    .post(`databases/${process.env.NOTION_TASK_DATABASE_ID}/query/`, data)
-    .then((data) => {
-      setTomorrowTask(data.results);
-    })
-    .catch((error) => {
-      console.log(error);
-    });
+  return result;
 };
 
 export default async function getTomorrowTask() {
-  await getTomorrowTaskFetcher(tomorrowTaskQuery);
+  const res = await getTomorrowTaskFetcher();
 
-  return tomorrowTaskAction;
+  if (res.error) {
+    throw new Error(res.error);
+  } else {
+    const choices = setTomorrowTask(res.results);
+
+    return {
+      name: 'todayTaskAction',
+      type: 'select',
+      message: '========== 明日のタスク一覧 ==========',
+      choices: choices,
+    };
+  }
 }
