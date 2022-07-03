@@ -1,8 +1,10 @@
 import getTomorrowTask from './src/tomorrowTaskAction';
 import getTodayTask from './src/todayTaskAction';
 import switchTask from './src/switchTask';
+import addTask from './src/addTodayTask';
 
 const Enquirer = require('enquirer');
+const { Input } = require('enquirer');
 
 (async () => {
   const rootAction = {
@@ -23,5 +25,13 @@ const Enquirer = require('enquirer');
     const result = await getTomorrowTask();
     const answer = await Enquirer.prompt(result);
   } else if (answer.rootAction === '今日のタスクを追加') {
+    const prompt = new Input({
+      message: '追加するタスクのタイトル名を入力してください',
+      initial: 'new task',
+    });
+    prompt
+      .run()
+      .then((answer: any) => addTask(answer))
+      .catch(console.log);
   }
 })();
